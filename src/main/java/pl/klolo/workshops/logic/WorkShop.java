@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToLongFunction;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class WorkShop {
@@ -28,14 +30,14 @@ class WorkShop {
      * Metoda zwraca liczbę holdingów w których jest przynajmniej jedna firma.
      */
     long getHoldingsWhereAreCompanies() {
-        return -1;
+        return holdings.stream().map(Holding::getCompanies).filter(Objects::nonNull).map(List::size).filter(i -> i > 0).count();
     }
 
     /**
      * Zwraca nazwy wszystkich holdingów pisane z małej litery w formie listy.
      */
     List<String> getHoldingNames() {
-        return null;
+        return holdings.stream().map(Holding::getName).map(String::toLowerCase).collect(Collectors.toList());
     }
 
     /**
@@ -43,21 +45,23 @@ class WorkShop {
      * String ma postać: (Coca-Cola, Nestle, Pepsico)
      */
     String getHoldingNamesAsString() {
-        return null;
+        return holdings.stream().map(Holding::getName).sorted().collect(Collectors.joining(", ", "(", ")"));
     }
 
     /**
      * Zwraca liczbę firm we wszystkich holdingach.
      */
     long getCompaniesAmount() {
-        return -1;
+        return holdings.stream().map(Holding::getCompanies).mapToLong(List::size).sum();
     }
 
     /**
      * Zwraca liczbę wszystkich pracowników we wszystkich firmach.
      */
     long getAllUserAmount() {
-        return -1;
+        return holdings.stream().map(Holding::getCompanies)
+                .mapToLong(companies -> companies.stream().map(Company::getUsers).mapToLong(List::size).sum())
+                .sum();
     }
 
     /**
